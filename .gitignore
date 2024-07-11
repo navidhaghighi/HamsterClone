@@ -10,3 +10,4 @@
 /UserSettings
 *.sln
 /Logs
+/NodeJS Server/node_modules
