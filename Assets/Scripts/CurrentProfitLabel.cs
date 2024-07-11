@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 [RequireComponent(typeof(TextMeshProUGUI))]
-public class CoinCountLabel :MonoBehaviour, IObserver
+public class CurrentProfitLabel : MonoBehaviour,IObserver
 {
-    private TextMeshProUGUI label;
-    public void Start()
+    private TextMeshProUGUI profitLabel;
+    // Start is called before the first frame update
+    void Start()
     {
-        label = GetComponent<TextMeshProUGUI>();
+        profitLabel = GetComponent<TextMeshProUGUI>();
         UserDataHandler.Instance.Attach(this);
     }
 
@@ -21,9 +22,8 @@ public class CoinCountLabel :MonoBehaviour, IObserver
     {
         if(subject is UserDataHandler)
         {
-            UserDataHandler dataHandler = (UserDataHandler)subject;
-            Debug.LogWarning("Coins changed " + dataHandler.GetCoinAmount());
-            label.text = dataHandler.GetCoinAmount().ToString();
+            UserDataHandler userData = (UserDataHandler)subject;
+            profitLabel.text = userData.GetProfitPerHour().ToString();
         }
     }
 }

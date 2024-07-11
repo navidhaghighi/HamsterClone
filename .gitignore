@@ -1,0 +1,12 @@
+
+/.vs
+/.vscode
+*.csproj
+/Library
+/UIElementsSchema
+/obj
+/Temp
+/UserSettings
+/UserSettings
+*.sln
+/Logs

@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IObserver<T> 
+public interface IObserver
 {
-    void Update(T data);   
+    // Receive update from subject
+    void UpdateObserver(ISubject subject);
 }

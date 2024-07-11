@@ -35,9 +35,11 @@ public class Tapper : MonoBehaviour
     {
         //TODO:use Object pooling
         Vector3 position = Input.mousePosition;
-       FadingLabel fadingLabel =  Instantiate(scoreEarnedLabel, position,Quaternion.identity,labelRoot.transform);
+        FadingLabel fadingLabel =  Instantiate(scoreEarnedLabel, position,Quaternion.identity,labelRoot.transform);
         fadingLabel.Init(currentCoinIncrease);
         StartCoroutine(RotateRabbit());
+        UserDataHandler.Instance.IncreaseCoins(currentCoinIncrease);
+        
     }
 
     private IEnumerator RotateRabbit()
