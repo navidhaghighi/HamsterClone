@@ -19,4 +19,9 @@ public class ContextManager : MonoBehaviour
         }
     }
     #endregion singleton
+
+    private void OnDisable()
+    {
+        Debug.LogError("Context manager disabled ");
+    }
 }

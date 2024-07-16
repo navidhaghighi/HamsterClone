@@ -37,7 +37,7 @@ public class MiningDataHandler : ISubject
     private void SendGetCardsRequest()
     {
         var req = new HttpRequest<GetCardsResponse>();
-       ContextManager.Instance.StartCoroutine(req.SendRequest("http://localhost:3000/GetMiningCards", (response) =>//onDone
+       ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL+"/GetMiningCards", (response) =>//onDone
         {
             this._cards = response.cards;
             Notify();

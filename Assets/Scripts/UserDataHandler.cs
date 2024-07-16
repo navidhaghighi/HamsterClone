@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class UserDataHandler : ISubject
 {
+    public User currentUser;
+    private int userId;
     private List<Rank> ranks = new List<Rank>() 
     {
         new Rank() 
@@ -34,6 +37,16 @@ public class UserDataHandler : ISubject
                 break;
             }
         }
+
+        int userId =  PlayerPrefs.GetInt("UserId");
+        if (userId==0)
+        {
+            SendCreateUserRequest();
+        }
+        else
+        {
+            SendGetUserDataRequest(userId);
+        }
     }
 
     private static UserDataHandler instance;
@@ -47,7 +60,38 @@ public class UserDataHandler : ISubject
         }
     }
     #endregion singleton
+    
+    private void SendGetUserDataRequest(int userId)
+    {
+        var req = new HttpRequest<User>();
+        ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL + "/login", (response) =>
+        {
+            SaveUser(response);
+            Notify();
+        },"userId=" +userId.ToString()));
+    }
 
+    private void SaveUser(User user)
+    {
+        currentUser = user;
+        userId = user.id;
+        coinsAmount = user.coin_balance;
+        PlayerPrefs.SetInt("UserId", user.id);
+        PlayerPrefs.SetInt("UserCoins", user.coin_balance);
+        PlayerPrefs.SetInt("UserProfit", user.profit);
+        PlayerPrefs.SetString("UserName", user.name);
+    }
+
+
+    private void SendCreateUserRequest()
+    {
+        var req = new HttpRequest<NewUserResponse>();
+        ContextManager.Instance.StartCoroutine( req.SendRequest(ServerConfig.baseURL+"/createNewUser",(response)=>
+        {
+            SaveUser(response.user[0]);
+            Notify();
+        }));
+    }
 
     public int GetProfitPerHour()
     {
@@ -74,6 +118,10 @@ public class UserDataHandler : ISubject
     }
 
 
+    public int GetUserId()
+    {
+        return userId;
+    }
 
     public int GetRanksCount()
     {
@@ -89,6 +137,17 @@ public class UserDataHandler : ISubject
     {
         profitPerHour+= profit;
         Notify();
+    }
+
+    public void Tapped(MonoBehaviour context)
+    {
+        Debug.LogWarning("Tapped request id is " + userId);
+        var req = new HttpRequest<User>();
+        ContextManager.Instance.StartCoroutine(  req.SendRequest(ServerConfig.baseURL + "/tapped", (response) =>
+        {
+            SaveUser(response);
+            Notify();
+        },"userId="+userId));
     }
 
     public void IncreaseCoins(int amount)
@@ -129,4 +188,13 @@ public class Rank
 {
     public string rankName;
     public int maximumCoin;
+}
+[System.Serializable]
+public class User
+{
+    public int id;
+    public string name;
+    public int profit;
+    public int coin_balance;
+    public int earn_per_tap;
 }

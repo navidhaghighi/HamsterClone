@@ -38,7 +38,7 @@ public class Tapper : MonoBehaviour
         FadingLabel fadingLabel =  Instantiate(scoreEarnedLabel, position,Quaternion.identity,labelRoot.transform);
         fadingLabel.Init(currentCoinIncrease);
         StartCoroutine(RotateRabbit());
-        UserDataHandler.Instance.IncreaseCoins(currentCoinIncrease);
+        UserDataHandler.Instance.Tapped(this);
         
     }
 

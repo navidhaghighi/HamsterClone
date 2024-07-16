@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class MiningTab : MonoBehaviour,IObserver
 {
+    [SerializeField]
+    private Transform miningCardsParent;
+    [SerializeField]
     private MiningCard cardPrefab;
     // Start is called before the first frame update
     void Start()
@@ -30,7 +33,7 @@ public class MiningTab : MonoBehaviour,IObserver
     {
         foreach (Card card in cards)
         {
-            var instantiatedCard =   Instantiate( cardPrefab );
+            var instantiatedCard =   Instantiate( cardPrefab,miningCardsParent );
             instantiatedCard.InitCard(card);
         }
 

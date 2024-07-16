@@ -11,15 +11,18 @@ public class GetCardsRequest : MonoBehaviour
 [System.Serializable]
 public class Card
 {
+    public int id;
     public string name;
-    public int initialProfit;
-    public Reward reward;
+    public int cost;
+    public Profit profit;
+    public string image_url;
 }
 [System.Serializable]
 
-public class Reward
+public class Profit
 {
-    public int coins;
+    public int profitPerHour;
+    public int totalProfit;
 }   
 [System.Serializable]
 public class GetCardsResponse
