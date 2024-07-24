@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MiningTab : MonoBehaviour,IObserver
 {
+    private List<MiningCard> miningCards = new List<MiningCard>(); 
     [SerializeField]
     private Transform miningCardsParent;
     [SerializeField]
@@ -12,6 +13,13 @@ public class MiningTab : MonoBehaviour,IObserver
     void Start()
     {
         MiningDataHandler.Instance.Attach(this);
+    }
+    [ContextMenu("DelteAll")]
+    public void DelteAll()
+    {
+        PlayerPrefs.DeleteAll();
+
+        Debug.LogWarning("Deleted ");
     }
 
     private void OnDestroy()
@@ -26,15 +34,35 @@ public class MiningTab : MonoBehaviour,IObserver
         {
             MiningDataHandler miningData = (MiningDataHandler)subject;
             RefreshCards( miningData.GetCards());
+            RefreshUserCards(miningData.GetUserCards());
         }
+    }
+    //update cards with data about user's current card's levels etc...
+    private void RefreshUserCards(List<UserCard> userCards)
+    {
+        foreach (var card in miningCards)
+        {
+            foreach (var userCard in userCards)
+            {
+                if(card.GetCardId() == userCard.cardId)
+                    card.SetUserData(userCard);
+            }
+        }
+
     }
 
     private void RefreshCards(List<Card> cards)
     {
+        foreach (Transform child in miningCardsParent.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
         foreach (Card card in cards)
         {
             var instantiatedCard =   Instantiate( cardPrefab,miningCardsParent );
             instantiatedCard.InitCard(card);
+            miningCards.Add(instantiatedCard);
         }
 
     }

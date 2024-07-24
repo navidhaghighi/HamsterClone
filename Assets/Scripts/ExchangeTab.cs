@@ -15,7 +15,12 @@ public class ExchangeTab : MonoBehaviour,IObserver
     // Start is called before the first frame update
     void Start()
     {
-        
+        UserDataHandler.Instance.Attach(this);
+    }
+
+    private void OnDestroy()
+    {
+        UserDataHandler.Instance.Detach(this);
     }
     public void UpdateObserver(ISubject subject)
     {

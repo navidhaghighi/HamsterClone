@@ -18,6 +18,14 @@ public class Card
     public string image_url;
 }
 [System.Serializable]
+public class UserCard
+{
+    public int cardId;
+    public int currentLevel;
+
+}
+
+[System.Serializable]
 
 public class Profit
 {

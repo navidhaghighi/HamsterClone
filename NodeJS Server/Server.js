@@ -49,12 +49,33 @@ ws.on('close',(message)=>
 });
 //#endregion
 //#region  functions
+
+function upgradeCard(userId,cardId)
+{
+  const promise = new Promise((resolve,reject)=>{
+  var updateQuery =`UPDATE usercards SET current_level=current_level+1 WHERE user_id=`+userId + '&cardId='+cardId+';';
+  con.query(updateQuery, function (err, updateResults) {
+    if(err)
+       reject(false);
+    else resolve(true);
+  });
+});
+return promise;
+}
+
+
 function buyMiningCard(cardId,userId)
 {
-  var insertQuery =`INSERT INTO usercards(card_id,user_id) VALUES(`+ cardId+`,`+userId+`);`;
-  con.query(insertQuery, function (err, updateResults) {
-
+  const promise = new Promise((resolve,reject)=>{
+    var insertQuery =`INSERT INTO usercards(card_id,user_id,current_level) VALUES(`+ cardId+`,`+userId+`,1);`;
+    con.query(insertQuery, function (err, updateResults) {
+      if(err)
+         reject(false);
+      else resolve(true);
+    });
   });
+  return promise;
+
 }
 
 function setLastConnectionDate(userId)
@@ -86,17 +107,18 @@ function sendWelcomeBackMessage(userData,wsConnection)
 function profitTimer(userId,wsConnection)
 {
   let newCoin =0;
-  setInterval(function(id,connection){ 
+  let intervalId =  setInterval(function(id,connection){ 
 
-
+    if(connection.readyState == 3)
+    {
+      clearInterval(intervalId);
+      return;
+    }
     getUserData(id).then(userData =>{
-      console.log('user data . coin before adding '+ userData.coin_balance);
       newCoin = Math.ceil( userData.coin_balance+( userData.profit/3600/*because an hour is 3600 seconds*/));
 
-      console.log('userdata . coin bal '+ userData.coin_balance);
 
       setCoinBalanceToDB(newCoin,id).then(new_balance=>{
-          console.log('this is the new balance '+new_balance);
         connection.send(JSON.stringify({
           messageType:'coinsUpdate',
           coin: new_balance
@@ -123,35 +145,82 @@ return promise;
 
 function userTapped(userData) {
 
-  console.log('userdata received in usertapped '+JSON.stringify( userData));
-  let earn_per_tap = userData.earn_per_tap;
-  let finalCoins = userData.coin_balance + earn_per_tap;
-  const customPromise = new Promise((resolve, reject) => {
-    var updateQuery =`UPDATE users SET coin_balance=`+finalCoins+ ` WHERE id=`+userData.id+`;`;
-    con.query(updateQuery, function (err, updateResults) {
-      if(err)
-        reject(err);
-      else
-        resolve(true);
-    });
-  })
-
-  return customPromise
+  increaseCoins(userData);
 }
+///increase coins then return the user object as the result
+function increaseCoins(user,increaseAmount)
+{
+  const promise = new Promise((resolve,reject)=>{
+    let newAmount =  user.coin_balance += increaseAmount;
+    user.coins_to_level_up = getNextRankCoinsRequired();
+
+    var qry =`SELECT * FROM ranks WHERE id=`+rankId+1;
+    var addCoinsQuery =`UPDATE users SET coin_balance=`+newAmount;
+    con.query(qry, function (err, results) {
+      if (err)//if there is no rank above this , then user has reached that last rank
+         reject(err); 
+      else
+      {
+        resolve(user.coin_balance + results[0].coins_required);
+      }});
+      return getRankCoinRequired(nextRank) - user.coin_balance;
+  });
+    return promise;
+
+}
+///how many coins user needs to reach the next rank
+//get next rank first, the next rank is whichever rank is after this one (you can find out which one is next 
+//either by rankId)
+function getNextRankCoinsRequired(user)
+{
+  const promise = new Promise((resolve,reject)=>{
+
+    var qry =`SELECT * FROM ranks WHERE id=`+rankId+1;
+    con.query(qry, function (err, results) {
+      if (err)//if there is no rank above this , then user has reached that last rank
+         reject(err); 
+      else
+      {
+        resolve(user.coin_balance + results[0].coins_required);
+      }});
+      return getRankCoinRequired(nextRank) - user.coin_balance;
+  });
+    return promise;
+
+}
+
+
+
 
 function getUserData(userId)
 {
   const promise = new Promise((resolve,reject)=>{
 
     var qry =`SELECT * FROM users WHERE id=`+userId;
-    console.log('getUserData of this id '+ userId);
+    con.query(qry, function (err, results) {
+      if (err)
+         reject(err); 
+      else
+      {
+        resolve(results[0]);
+      }});
+
+  });
+    return promise;
+}
+
+function getUserCards(userId)
+{
+  const promise = new Promise((resolve,reject)=>{
+
+    var qry =`SELECT * FROM usercards WHERE user_id=`+userId;
     con.query(qry, function (err, results) {
       console.log('err is '+ err);
       if (err)
          reject(err); 
       else
       {
-        resolve(results[0]);
+        resolve(results);
       }});
 
   });
@@ -199,7 +268,7 @@ app.post('/login',urlencodedParser, (req, res) => {
 app.post('/tapped',urlencodedParser, (req, res) => {
     getUserData(req.body.userId).then
     (data=>{
-      userTapped(data).then(userTappedData=>
+      userTapped(data,data.earn_per_tap).then(userTappedData=>
       {
         getUserData(req.body.userId).then(secondUserData=>{
             res.end(JSON.stringify(secondUserData));
@@ -208,9 +277,12 @@ app.post('/tapped',urlencodedParser, (req, res) => {
     });
 });
 
-
-app.post('/buyMiningCard',urlencodedParser, (req, res) => {
-  buyMiningCard(req.body.cardId,req.body.userId);
+app.post('/getUserCards',urlencodedParser, (req, res) => {
+  getUserCards(req.body.userId).then(data=>
+  {
+    console.log('responding to GetUserCards with ' +JSON.stringify(data));
+    res.end (JSON.stringify( data));
+  });
 });
 
 
@@ -241,11 +313,21 @@ LIMIT     1;`;
  });
 });
 
+app.post('/upgradeCard',urlencodedParser,(req,res)=>{
+  upgradeCard(req.body.userId,req.body.cardId).then(data=>{
+    console.log('result is '+ data);
 
-app.get('BuyCard',(req,res)=>{
-    console.log('req body is '+ req.body);
+  });
+  res.end();
 });
-app.get('/GetMiningCards', (req, res) => {
+
+app.post('/buyCard',urlencodedParser,(req,res)=>{
+    buyMiningCard(req.body.cardId,req.body.userId);
+    res.end();
+});
+
+
+app.get('/getMiningCards', (req, res) => {
   let selectQuery = 'SELECT * FROM cards;'
   con.query(selectQuery, function (err, results) {
     console.log('err is '+ err);
