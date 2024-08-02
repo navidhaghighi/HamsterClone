@@ -233,6 +233,7 @@ function getUserCards(userId)
 //#endregion
 
 //#region DB connection
+
 var mysql = require('mysql');
 var con = mysql.createConnection({
    host: "localhost",
