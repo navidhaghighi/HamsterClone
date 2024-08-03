@@ -144,26 +144,37 @@ return promise;
 
 
 function userTapped(userData) {
-
-  increaseCoins(userData);
+  const promise = new Promise((resolve,reject)=>{
+console.log('in user tapped sending this '+userData.earn_per_tap );
+  increaseCoins(userData,userData.earn_per_tap).then(data=>{
+    if(data!=null)
+      resolve(data);
+    else reject();
+  });
+});
+return promise;
 }
 ///increase coins then return the user object as the result
 function increaseCoins(user,increaseAmount)
 {
   const promise = new Promise((resolve,reject)=>{
-    let newAmount =  user.coin_balance += increaseAmount;
-    user.coins_to_level_up = getNextRankCoinsRequired();
+    getNextRankCoinsRequired(user).then(result=>{
+      console.log('the user is '+ user);
+      console.log('the increase '+ increaseAmount);
 
-    var qry =`SELECT * FROM ranks WHERE id=`+rankId+1;
-    var addCoinsQuery =`UPDATE users SET coin_balance=`+newAmount;
-    con.query(qry, function (err, results) {
-      if (err)//if there is no rank above this , then user has reached that last rank
-         reject(err); 
-      else
-      {
-        resolve(user.coin_balance + results[0].coins_required);
-      }});
-      return getRankCoinRequired(nextRank) - user.coin_balance;
+    let newAmount =  user.coin_balance += increaseAmount;
+
+      var addCoinsQuery =`UPDATE users SET coin_balance=`+newAmount+`, coins_to_level_up=`+result+` WHERE id=`+user.id+`;`;
+      con.query(addCoinsQuery, function (err, results) {
+        if (err)//if there is no rank above this , then user has reached that last rank
+           reject(err); 
+        else
+        {
+          console.log('last log '+ results[0]);
+          resolve(true);
+        }});
+    });
+
   });
     return promise;
 
@@ -173,17 +184,25 @@ function increaseCoins(user,increaseAmount)
 //either by rankId)
 function getNextRankCoinsRequired(user)
 {
+  console.log("getNextRankCoinsRequired user id "+ user)
   const promise = new Promise((resolve,reject)=>{
-
-    var qry =`SELECT * FROM ranks WHERE id=`+rankId+1;
+    //get user current rank
+    console.log('user is '+ (user.current_rank+1));
+    var qry =`SELECT * FROM  ranks WHERE id=`+(user.current_rank+1);
+    console.log('after select '+ user.current_rank);
     con.query(qry, function (err, results) {
-      if (err)//if there is no rank above this , then user has reached that last rank
+      let currentRank  = results[0];
+      console.log("next rank is "+ results[0]);
+      if (err)
+        {//if there is no rank above this , then user has reached that last rank
+          console.log('there was error '+ err);
          reject(err); 
+        }
       else
       {
-        resolve(user.coin_balance + results[0].coins_required);
+        console.log('before resolve '+results );
+        resolve( results[0].coins_required - user.coin_balance );
       }});
-      return getRankCoinRequired(nextRank) - user.coin_balance;
   });
     return promise;
 
