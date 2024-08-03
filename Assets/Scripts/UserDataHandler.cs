@@ -5,24 +5,25 @@ public class UserDataHandler : ISubject
 {
     public User currentUser;
     private int userId;
-    private List<Rank> ranks = new List<Rank>() 
+    private List<Rank> ranks = new List<Rank>()
     {
-        new Rank() 
+        new Rank()
         {
             rankName = "Silver", maximumCoin = 5000
         },
-        new Rank() 
+        new Rank()
         {
             rankName = "Gold", maximumCoin = 10000
-        }, 
-        
-        new Rank() 
+        },
+
+        new Rank()
         {
             rankName = "Diamond", maximumCoin = 20000
         },
 
     };
     private Rank currentRank;
+    private int coinsToLevelUp;
     private int profitPerHour;
     private int coinsAmount;
     private List<IObserver> observers = new List<IObserver>();
@@ -38,8 +39,8 @@ public class UserDataHandler : ISubject
             }
         }
 
-        int userId =  PlayerPrefs.GetInt("UserId");
-        if (userId==0)
+        int userId = PlayerPrefs.GetInt("UserId");
+        if (userId == 0)
         {
             SendCreateUserRequest();
         }
@@ -60,7 +61,7 @@ public class UserDataHandler : ISubject
         }
     }
     #endregion singleton
-    
+
     private void SendGetUserDataRequest(int userId)
     {
         var req = new HttpRequest<User>();
@@ -68,7 +69,7 @@ public class UserDataHandler : ISubject
         {
             SaveUser(response);
             Notify();
-        },"userId=" +userId.ToString()));
+        }, "userId=" + userId.ToString()));
     }
 
     private void SaveUser(User user)
@@ -76,6 +77,7 @@ public class UserDataHandler : ISubject
         currentUser = user;
         userId = user.id;
         coinsAmount = user.coin_balance;
+        coinsToLevelUp = user.coins_to_level_up;
         PlayerPrefs.SetInt("UserId", user.id);
         PlayerPrefs.SetInt("UserCoins", user.coin_balance);
         PlayerPrefs.SetInt("UserProfit", user.profit);
@@ -86,13 +88,20 @@ public class UserDataHandler : ISubject
     private void SendCreateUserRequest()
     {
         var req = new HttpRequest<NewUserResponse>();
-        ContextManager.Instance.StartCoroutine( req.SendRequest(ServerConfig.baseURL+"/createNewUser",(response)=>
+        ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL + "/createNewUser", (response) =>
         {
             SaveUser(response.user[0]);
             Notify();
         }));
     }
-
+    /// <summary>
+    /// how much coin is left until next level?
+    /// </summary>
+    /// <returns></returns>
+    public int GetCoinsToLevelUp()
+    {
+        return coinsToLevelUp;
+    }
     public int GetProfitPerHour()
     {
         return profitPerHour;
@@ -197,4 +206,5 @@ public class User
     public int profit;
     public int coin_balance;
     public int earn_per_tap;
+    public int coins_to_level_up;
 }

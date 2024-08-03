@@ -3851,7 +3851,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   miningCardsParent: {fileID: 5803599}
-  cardPrefab: {fileID: 5256893774395230856, guid: d1f86d35138c80c4892b820ae956dd15, type: 3}
+  cardPrefab: {fileID: 9101700108360341643, guid: d1f86d35138c80c4892b820ae956dd15, type: 3}
 --- !u!224 &533695524 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3076245284534431711, guid: ecff53b5ac95ddd48872322ab35e1e8a, type: 3}
@@ -16415,11 +16415,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7302641095423908723, guid: c1bf8bc2301999f43b916b9ee63d290e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 229.7691
+      value: 275.49
       objectReference: {fileID: 0}
     - target: {fileID: 7302641095423908723, guid: c1bf8bc2301999f43b916b9ee63d290e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 4.9242
+      value: 0.0000071526
+      objectReference: {fileID: 0}
+    - target: {fileID: 7302641095423908723, guid: c1bf8bc2301999f43b916b9ee63d290e, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7302641095423908724, guid: c1bf8bc2301999f43b916b9ee63d290e, type: 3}
+      propertyPath: m_text
+      value: Coins to level up
       objectReference: {fileID: 0}
     - target: {fileID: 7302641095449334422, guid: c1bf8bc2301999f43b916b9ee63d290e, type: 3}
       propertyPath: m_SizeDelta.y
