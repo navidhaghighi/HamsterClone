@@ -1094,7 +1094,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1803.0808, y: 1003.1532}
+  m_AnchoredPosition: {x: 4056.9316, y: 2257.0947}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &154768541
@@ -6959,8 +6959,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 960228214}
-  - component: {fileID: 960228216}
   - component: {fileID: 960228217}
+  - component: {fileID: 960228218}
   m_Layer: 5
   m_Name: HamsterRoot
   m_TagString: Untagged
@@ -6990,18 +6990,6 @@ RectTransform:
   m_AnchoredPosition: {x: 4.5704346, y: 5.855713}
   m_SizeDelta: {x: -15.340027, y: -10.188599}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &960228216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 960228213}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fad43fee811ade43b1bbd9b5f4be213, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!111 &960228217
 Animation:
   m_ObjectHideFlags: 0
@@ -7018,6 +7006,20 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &960228218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960228213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b230f6ee9fb998a49a37e2c2fb5c8583, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playReverse: 0
+  firstTimeDelay: 0
 --- !u!1001 &986226078
 PrefabInstance:
   m_ObjectHideFlags: 0
