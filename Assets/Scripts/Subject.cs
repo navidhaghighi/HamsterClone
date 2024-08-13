@@ -52,4 +52,9 @@ public class Subject : ISubject
         Console.WriteLine("Subject: My state has just changed to: " + this.State);
         this.Notify();
     }
+
+    public void InitializeObserver(IObserver observer)
+    {
+        Notify();
+    }
 }

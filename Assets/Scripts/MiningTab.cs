@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MiningTab : MonoBehaviour,IObserver
 {
+    //TODO:isinit should be set to false via a WebSocket call from server.
+    private bool isInit;
     private List<MiningCard> miningCards = new List<MiningCard>(); 
     [SerializeField]
     private Transform miningCardsParent;
@@ -33,19 +35,27 @@ public class MiningTab : MonoBehaviour,IObserver
         if (subject is MiningDataHandler)
         {
             MiningDataHandler miningData = (MiningDataHandler)subject;
-            RefreshCards( miningData.GetCards());
+            var cards = miningData.GetCards();
+            if (isInit == false && cards.Count > 0)
+            {
+                isInit = true;
+                RefreshCards(cards);
+            }
             RefreshUserCards(miningData.GetUserCards());
         }
     }
     //update cards with data about user's current card's levels etc...
     private void RefreshUserCards(List<UserCard> userCards)
     {
-        foreach (var card in miningCards)
+        if (userCards != null && userCards.Count > 0)
         {
-            foreach (var userCard in userCards)
+            foreach (var card in miningCards)
             {
-                if(card.GetCardId() == userCard.cardId)
-                    card.SetUserData(userCard);
+                foreach (var userCard in userCards)
+                {
+                    if (card.GetCardId() == userCard.card_id)
+                        card.SetUserData(userCard);
+                }
             }
         }
 

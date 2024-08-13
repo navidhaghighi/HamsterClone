@@ -13,4 +13,6 @@ public interface ISubject
 
     // Notify all observers about an event.
     void Notify();
+
+    void InitializeObserver(IObserver observer);
 }

@@ -5,5 +5,5 @@ using UnityEngine;
 public class NewUserResponse
 {
 
-    public User[] user;
+    public User user;
 }

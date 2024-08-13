@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ExchangeTab : MonoBehaviour,IObserver
+public class ExchangeTab : MonoBehaviour, IObserver
 {
     [SerializeField]
     private TextMeshProUGUI currentProfitLabel;
@@ -29,7 +27,8 @@ public class ExchangeTab : MonoBehaviour,IObserver
             UserDataHandler dataHandler = (UserDataHandler)subject;
             coinsToLevelUpLabel.text = dataHandler.GetCoinsToLevelUp().ToString();
             currentProfitLabel.text = dataHandler.GetProfitPerHour().ToString();
-            tapToEarnLabel.text = dataHandler.currentUser.earn_per_tap.ToString();
+            if (dataHandler.currentUser != null)
+                tapToEarnLabel.text = dataHandler.currentUser.earn_per_tap.ToString();
         }
     }
 

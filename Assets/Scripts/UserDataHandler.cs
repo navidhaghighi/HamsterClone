@@ -90,7 +90,7 @@ public class UserDataHandler : ISubject
         var req = new HttpRequest<NewUserResponse>();
         ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL + "/createNewUser", (response) =>
         {
-            SaveUser(response.user[0]);
+            SaveUser(response.user);
             Notify();
         }));
     }
@@ -110,6 +110,7 @@ public class UserDataHandler : ISubject
     public void Attach(IObserver observer)
     {
         observers.Add(observer);
+        InitializeObserver(observer);
     }
 
     public Rank GetCurrentRank()
@@ -190,6 +191,11 @@ public class UserDataHandler : ISubject
         {
             observer.UpdateObserver(this);
         }
+    }
+
+    public void InitializeObserver(IObserver observer)
+    {
+        Notify();
     }
 }
 [System.Serializable]

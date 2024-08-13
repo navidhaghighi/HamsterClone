@@ -24,27 +24,33 @@ public class MiningCard : MonoBehaviour,IObserver
     private void Awake()
     {
         UserDataHandler.Instance.Attach(this);
+        UserMiningDataHandler.Instance.Attach(this);
     }
 
     private void OnDestroy()
     {
         UserDataHandler.Instance.Detach(this);
+        UserMiningDataHandler.Instance.Detach(this);
     }
 
     public void SetUserData(UserCard userCard)
     {
-        cardLevelLabel.text = userCard.currentLevel.ToString();
+        cardLevelLabel.text ="LVL"+ userCard.current_level.ToString();
     }
 
     public void InitCard(Card card)
     {
         cardId = card.id;
         cardNameLabel.text = card.name;
-        cardProfitPerHourLabel.text = card.profit.profitPerHour.ToString();
-        cardTotalProfitLabel.text = card.profit.totalProfit.ToString();
+        cardProfitPerHourLabel.text = card.initial_profit.ToString();
        // cardLevelLabel.text = card.currentLevel.ToString();
         cardCostLabel.text = card.cost.ToString();
         cloudImage.Init(card.image_url);
+    }
+
+    public void InitUserCard(UserCard userCard)
+    {
+        cardLevelLabel.text = "lvl "+ userCard.current_level.ToString();
     }
 
     public int GetCardId() { return cardId; }   
@@ -53,9 +59,9 @@ public class MiningCard : MonoBehaviour,IObserver
     public void BuyCard()
     {
         if(cardLevel==0)
-            MiningDataHandler.Instance.BuyCard(cardId,userId);
+            UserMiningDataHandler.Instance.BuyCard(cardId,userId);
         else
-            MiningDataHandler.Instance.UpgradeCard(cardId, userId);
+            UserMiningDataHandler.Instance.UpgradeCard(cardId, userId);
 
     }
 
@@ -65,6 +71,18 @@ public class MiningCard : MonoBehaviour,IObserver
         {
             UserDataHandler dataHandler = (UserDataHandler)subject;
             userId = dataHandler.GetUserId();
+        }
+        else if(subject is UserMiningDataHandler)
+        {
+            UserMiningDataHandler dataHandler = (UserMiningDataHandler)subject;
+            var userCards =  dataHandler.GetUserCards();
+            foreach (var userCard in userCards)
+            {
+                if(cardId == userCard.card_id)
+                {
+                    InitUserCard(userCard);
+                }
+            }    
         }
     }
 }

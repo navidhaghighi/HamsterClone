@@ -47,7 +47,7 @@ public class CoinCountLabel :MonoBehaviour, IObserver
         if(subject is UserDataHandler)
         {
             UserDataHandler dataHandler = (UserDataHandler)subject;
-            if (initWebsocket == false)
+            if (initWebsocket == false&&dataHandler.currentUser!=null)
                 StartWebsocketConnection(dataHandler);
             Debug.LogWarning("Coins changed " + dataHandler.GetCoinAmount());
             label.text = dataHandler.GetCoinAmount().ToString();
