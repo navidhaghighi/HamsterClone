@@ -15,6 +15,7 @@ public class MiningTab : MonoBehaviour,IObserver
     void Start()
     {
         MiningDataHandler.Instance.Attach(this);
+        UserMiningDataHandler.Instance.Attach(this);
     }
     [ContextMenu("DelteAll")]
     public void DelteAll()
@@ -27,6 +28,7 @@ public class MiningTab : MonoBehaviour,IObserver
     private void OnDestroy()
     {
         MiningDataHandler.Instance.Detach(this);
+        UserMiningDataHandler.Instance.Detach(this);
     }
 
     public void UpdateObserver(ISubject subject)
@@ -41,7 +43,12 @@ public class MiningTab : MonoBehaviour,IObserver
                 isInit = true;
                 RefreshCards(cards);
             }
-            RefreshUserCards(miningData.GetUserCards());
+        }
+        else if (subject is UserMiningDataHandler)
+        {
+            UserMiningDataHandler miningData = (UserMiningDataHandler)subject;
+            var userCards  = miningData.GetUserCards();
+            RefreshUserCards(userCards);
         }
     }
     //update cards with data about user's current card's levels etc...

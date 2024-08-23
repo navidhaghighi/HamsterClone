@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class UserDataHandler : ISubject
 {
+    public int inactiveCoins;
     public User currentUser;
     private int userId;
     private List<Rank> ranks = new List<Rank>()
@@ -38,16 +39,8 @@ public class UserDataHandler : ISubject
                 break;
             }
         }
+        RefreshUserData();
 
-        int userId = PlayerPrefs.GetInt("UserId");
-        if (userId == 0)
-        {
-            SendCreateUserRequest();
-        }
-        else
-        {
-            SendGetUserDataRequest(userId);
-        }
     }
 
     private static UserDataHandler instance;
@@ -62,12 +55,26 @@ public class UserDataHandler : ISubject
     }
     #endregion singleton
 
-    private void SendGetUserDataRequest(int userId)
+    public void RefreshUserData()
     {
-        var req = new HttpRequest<User>();
+        int userId = PlayerPrefs.GetInt("UserId");
+        if (userId == 0)
+        {
+            SendCreateUserRequest();
+        }
+        else
+        {
+            SendGetUserDataRequest(userId);
+        }
+    }
+
+    public void SendGetUserDataRequest(int userId)
+    {
+        var req = new HttpRequest<LoginResponse>();
         ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL + "/login", (response) =>
         {
-            SaveUser(response);
+            SaveUser(response.user);
+            inactiveCoins = response.coinsReceived;
             Notify();
         }, "userId=" + userId.ToString()));
     }
@@ -93,18 +100,6 @@ public class UserDataHandler : ISubject
             SaveUser(response.user);
             Notify();
         }));
-    }
-    /// <summary>
-    /// how much coin is left until next level?
-    /// </summary>
-    /// <returns></returns>
-    public int GetCoinsToLevelUp()
-    {
-        return coinsToLevelUp;
-    }
-    public int GetProfitPerHour()
-    {
-        return profitPerHour;
     }
 
     public void Attach(IObserver observer)
@@ -141,12 +136,6 @@ public class UserDataHandler : ISubject
     public void Detach(IObserver observer)
     {
         observers.Remove(observer);
-    }
-
-    public void IncreaseProfit(int profit)
-    {
-        profitPerHour+= profit;
-        Notify();
     }
 
     public void Tapped(MonoBehaviour context)

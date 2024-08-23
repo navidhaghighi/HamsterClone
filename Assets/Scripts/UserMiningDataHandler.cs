@@ -36,6 +36,7 @@ public class UserMiningDataHandler : ISubject
         ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL + "/upgradeCard", (response) =>//onDone
         {
             SendGetUserCardsRequest(userId);
+            UserDataHandler.Instance.RefreshUserData();
         }, "cardId=" + cardId + "&userId=" + userId));
     }
 
@@ -45,6 +46,7 @@ public class UserMiningDataHandler : ISubject
         ContextManager.Instance.StartCoroutine(req.SendRequest(ServerConfig.baseURL + "/buyCard", (response) =>//onDone
         {
             SendGetUserCardsRequest(userId);
+            UserDataHandler.Instance.RefreshUserData();
         }, "cardId=" + cardId + "&userId=" + userId));
     }
 

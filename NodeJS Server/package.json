@@ -1,5 +1,5 @@
 {
-  "type": "module",
+  "type": "commonjs",
   "name": "hamsterclone",
   "version": "1.0.0",
   "description": "Cloned the hamster kombat game",

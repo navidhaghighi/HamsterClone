@@ -25,8 +25,8 @@ public class ExchangeTab : MonoBehaviour, IObserver
         if (subject is UserDataHandler)
         {
             UserDataHandler dataHandler = (UserDataHandler)subject;
-            coinsToLevelUpLabel.text = dataHandler.GetCoinsToLevelUp().ToString();
-            currentProfitLabel.text = dataHandler.GetProfitPerHour().ToString();
+            coinsToLevelUpLabel.text = dataHandler.currentUser.coins_to_level_up.ToString();
+            currentProfitLabel.text = dataHandler.currentUser.profit.ToString();
             if (dataHandler.currentUser != null)
                 tapToEarnLabel.text = dataHandler.currentUser.earn_per_tap.ToString();
         }

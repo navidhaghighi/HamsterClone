@@ -36,7 +36,7 @@ public class GiveProfit : MonoBehaviour,IObserver
         if(subject is UserDataHandler)
         {
             UserDataHandler userData = (UserDataHandler)subject;
-            currentProfitPerHour = userData.GetProfitPerHour();
+            currentProfitPerHour = userData.currentUser.profit;
         }
     }
 }

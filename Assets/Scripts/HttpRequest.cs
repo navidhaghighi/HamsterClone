@@ -25,11 +25,18 @@ public class HttpRequest<T>
             while (req.downloadProgress<1)
             {
                 Debug.LogWarning("Req progress "+ req.downloadProgress);
-                yield return null;  
+                yield return null;
             }
             Debug.LogWarning("Req error is "+ req.error);
-            T response = JsonUtility.FromJson<T>(req.downloadHandler.text);
-            onDone?.Invoke(response);
+            //check for error messages inside the response 
+            HTTPResponse serverResponse = JsonUtility.FromJson<HTTPResponse>(req.downloadHandler.text);
+            if(serverResponse != null )
+            {
+                if(serverResponse.responseResult=="failure")
+                    Debug.LogError("Received this error from server "+ serverResponse.errorMessage);
+            }    
+            T genericResponse = JsonUtility.FromJson<T>(req.downloadHandler.text);
+            onDone?.Invoke(genericResponse);
         }
         else
         {

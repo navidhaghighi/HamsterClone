@@ -39,6 +39,12 @@ public  class SocketManager : MonoBehaviour,IObserver
         Debug.LogWarning("Scoket message received message "+ e.Data.ToString());
         onMessage?.Invoke(e.Data);
     }
+    [ContextMenu("SendHello")]
+    public void SendTest()
+    {
+        StartCoroutine(SendMessageViaSocket("Hello"));
+    }
+
     public IEnumerator SendMessageViaSocket(string msg)
     {
         yield return new WaitUntil(()=>init== true);
